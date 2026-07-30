@@ -1,17 +1,18 @@
 # Blood Donation Network (BDN)
 
-> A database-driven, real-time platform connecting local blood donors with hospitals and blood banks to solve critical blood supply shortages during emergency operations and acute trauma cases.
+> **A database-driven, real-time platform connecting local voluntary blood donors with hospitals and blood banks to solve critical blood supply shortages during emergency operations and acute trauma cases.**
 
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/raviranjansingh/blood-donation-network)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-blue)](https://nodejs.org)
-[![PostgreSQL Version](https://img.shields.io/badge/postgresql-16.0%2B-blue)](https://www.postgresql.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue)](https://www.typescriptlang.org/)
-[![Status](https://img.shields.io/badge/status-Production--Ready-success)](#)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge&logo=githubactions)](https://github.com/Hellthefox808/Blood-Donation-Network)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D20.0.0-blue?style=for-the-badge&logo=nodedotjs)](https://nodejs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=nextdotjs)](https://nextjs.org)
+[![PostgreSQL](https://img.shields.io/badge/postgresql-16.0%2B-blue?style=for-the-badge&logo=postgresql)](https://www.postgresql.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Status](https://img.shields.io/badge/status-Production--Ready-success?style=for-the-badge)](#)
 
 ---
 
-## 1. Project Title & Overview
+## 1. Project Title & Tagline
 - **Project Name:** Blood Donation Network (BDN)
 - **Tagline:** Real-Time Database-Driven Emergency Blood Matching Engine
 - **Current Version:** `1.0.0`
@@ -21,7 +22,7 @@
 
 ## 2. Executive Summary
 
-In emergency healthcare scenarios, time-to-blood transfusion directly determines patient survival rates. Traditional blood donation networks rely on fragmented communication channels (manual phone calls, unverified social media broadcasts, physical registries), causing critical delays of 2 to 6 hours and inventory mismatches.
+In emergency medical scenarios, time-to-blood transfusion directly determines patient survival rates. Traditional blood donation networks rely on fragmented communication channels (manual phone calls, unverified social media broadcasts, physical registries), causing critical delays of 2 to 6 hours and inventory mismatches.
 
 **Blood Donation Network (BDN)** provides a real-time, centralized ecosystem that:
 - Connects accredited medical facilities with nearby eligible voluntary donors within minutes.
@@ -41,40 +42,50 @@ Provide regional health departments, emergency surgical centers, and blood repos
 2. **Clinical Cooldown Safeguards:** Enforce mandatory recovery windows (56 days for Whole Blood, 14 days for Platelets) to protect donor health.
 3. **Operational Visibility:** Maintain real-time inventory tracking across 8 blood component types.
 
-### High-Level Workflow
+### High-Level System Architecture
 ```
-[ Hospital Creates Emergency Request ] 
-                 |
-                 v
-[ PostGIS Spatial & ABO/Rh Compatibility Query ]
-                 |
-                 v
-[ Real-Time Notification Dispatch (WS + SMS) ]
-                 |
-                 v
-[ Donor Match Acceptance & GPS Routing ]
-                 |
-                 v
-[ Hospital Receipt Confirmation & 56-Day Cooldown Lock ]
+[ Voluntary Donor (PWA) ]        [ Hospital Admin (Portal) ]        [ Blood Bank Manager ]
+          |                                   |                                |
+          +-------------------+---------------+--------------------------------+
+                              |
+                              v
+             +----------------------------------+
+             |   Next.js 14 App Router Client   |
+             +----------------+-----------------+
+                              | HTTPS / WSS
+                              v
+             +----------------------------------+
+             |   Node.js Express API Server     |
+             +----------------+-----------------+
+                              |
+          +-------------------+-------------------+
+          |                   |                   |
+          v                   v                   v
+[ PostgreSQL + PostGIS ]  [ Redis 7 + BullMQ ]  [ External Services ]
+• Relational Tables       • Session Cache       • Twilio SMS API
+• Spatial Index           • Rate Limiter        • SendGrid Email API
+• Audit Logs              • WebSocket Adapter   • Google Distance API
 ```
 
 ---
 
-## 4. Key Features
+## 4. Key Features Matrix
 
-- **Multi-Role Access Control (RBAC):** Distinct workflows for `DONOR`, `HOSPITAL_ADMIN`, `BLOOD_BANK_MANAGER`, and `SYSTEM_ADMIN`.
-- **Geospatial Proximity Matcher:** PostGIS radius queries searching donors across dynamic radii (`ROUTINE` = 10km, `URGENT` = 25km, `CRITICAL` = 50km).
-- **Clinical ABO/Rh Matrix:** Automated compatibility checking for packed red cells and plasma components.
-- **Real-Time Push Alerts:** Low-latency WebSockets (Socket.io) paired with Twilio SMS fallback for offline donors.
-- **Hospital Command Center:** Interactive dashboard to broadcast emergency requests, track candidate donor ETAs, and confirm unit receipts.
-- **System Admin Verification Panel:** Interface for reviewing hospital medical licenses and auditing immutable security logs.
-- **Accessible & Responsive UX:** WCAG 2.2 AA compliant layout with high-contrast tokens, keyboard focus rings, and mobile-first responsive cards.
+| Module | Capability | Implementation Detail |
+| :--- | :--- | :--- |
+| **Authentication & RBAC** | Multi-Role Session Strategy | RS256 JWT tokens + HttpOnly refresh cookies + Redis revocation blacklist for `DONOR`, `HOSPITAL_ADMIN`, `BLOOD_BANK_MANAGER`, and `SYSTEM_ADMIN`. |
+| **Emergency Matcher** | PostGIS Proximity Engine | Sub-second spatial queries searching compatible donors across dynamic radii (`ROUTINE` = 10km, `URGENT` = 25km, `CRITICAL` = 50km). |
+| **Clinical Cooldown** | Automated Recovery Locking | Enforces 56-day whole blood and 14-day platelet recovery windows between donations (`nextEligibleDate = now + 56 days`). |
+| **Real-Time Alerts** | Low-Latency Push & SMS | Socket.io WebSocket broadcasts to online donors paired with automated Twilio SMS dispatches for offline donors. |
+| **Hospital Command** | Live Request Tracker | Dashboard to broadcast emergency requests, track candidate donor arrival ETAs, and confirm unit receipts. |
+| **Admin Control Panel**| Accreditation & Auditing | Single-click verification for hospital medical licenses and immutable security audit log querying. |
+| **Accessible UI/UX** | WCAG 2.2 AA Compliance | High-contrast visual tokens, keyboard focus rings, Radix UI dialog traps, and 4-state visual containers. |
 
 ---
 
-## 5. Screenshots & Interface Previews
+## 5. Visual Screenshots & Interface Maps
 
-### Landing Page Preview
+### 5.1 Landing Page Dashboard
 ```
 +-------------------------------------------------------------------------+
 | [ Logo: BDN ]  Connecting Donors & Hospitals In Seconds  [ Sign In ]   |
@@ -83,10 +94,15 @@ Provide regional health departments, emergency surgical centers, and blood repos
 | Direct PostGIS Radius Querying | 56-Day Clinical Cooldown Enforcement   |
 |                                                                         |
 | [ Register as Voluntary Donor ]        [ Hospital Admin Portal ]        |
+|                                                                         |
+| PRE-SEEDED DEMO ACCOUNTS:                                               |
+| • Donor: john.donor@gmail.com        | Password: Password123!@#          |
+| • Hospital: stjude@hospital.org      | Password: Password123!@#          |
+| • Admin: admin@bdn.org               | Password: Password123!@#          |
 +-------------------------------------------------------------------------+
 ```
 
-### Hospital Command Center Preview
+### 5.2 Hospital Command Center Dashboard
 ```
 +-------------------------------------------------------------------------+
 | ST. JUDE EMERGENCY CENTER                    [ + Create Request ]       |
@@ -100,7 +116,7 @@ Provide regional health departments, emergency surgical centers, and blood repos
 +-------------------------------------------------------------------------+
 ```
 
-### Donor Mobile Alert Preview
+### 5.3 Donor Mobile Alert PWA View
 ```
 +------------------------------------+
 |  [!] CRITICAL BLOOD ALERT NEEDED   |
@@ -116,38 +132,42 @@ Provide regional health departments, emergency surgical centers, and blood repos
 
 ---
 
-## 6. Technology Stack
-
-- **Frontend:** Next.js 14 App Router, React 18, TypeScript 5.4, Tailwind CSS, Lucide Icons, TanStack Query.
-- **Backend API:** Node.js v20 LTS, Express.js 4.19, TypeScript 5.4, Prisma ORM 5.14, Zod Validation.
-- **Database:** PostgreSQL 16 + PostGIS 3.4 Spatial Extension (Development fallback: SQLite `dev.db`).
-- **Caching & Real-Time:** Redis 7.2, Socket.io 4.7, BullMQ 5.7.
-- **Authentication & Security:** JWT (RS256 signed), bcryptjs / Argon2id password hashing, Helmet.js, Express Rate Limit.
-- **Testing Suite:** Jest, Supertest, Playwright, React Testing Library, `@axe-core/playwright`.
-- **Infrastructure & DevOps:** Docker, Docker Compose, GitHub Actions CI/CD, Kubernetes Helm Charts.
-
----
-
-## 7. Architecture Overview
-
-BDN uses a strict 4-layer clean architecture to maintain separation of concerns:
+## 6. Technology Stack & Dependencies
 
 ```
-[ Presentation Layer ]  ---> Next.js 14 App Router / React Components
-          |
-          v
-[ Service Layer ]       ---> Express Controllers, Zod Validators, Domain Services
-          |
-          v
-[ Data Layer ]          ---> Prisma ORM, PostgreSQL 16 + PostGIS, Redis Cache
-          |
-          v
-[ Integration Layer ]   ---> Twilio SMS API, SendGrid Email API, Google Maps API
+FRONTEND              BACKEND API           DATABASE & CACHE       SECURITY & DEVOPS
+• Next.js 14.2        • Node.js 20 LTS      • PostgreSQL 16        • RS256 JWT & Argon2id
+• React 18.3          • Express.js 4.19     • PostGIS 3.4          • Docker Compose
+• TypeScript 5.4      • Prisma ORM 5.14     • Redis 7.2            • GitHub Actions CI/CD
+• Tailwind CSS 3.4    • Zod Validation      • BullMQ Queue         • Helm Kubernetes Charts
+• Lucide Icons        • Socket.io 4.7       • SQLite (Local Dev)   • Playwright E2E Testing
 ```
 
 ---
 
-## 8. Project Structure
+## 7. Architectural Layer Breakdown
+
+Dependencies flow unidirectionally inwards towards pure domain logic:
+
+```
+[ 1. Presentation Layer ] ---> Next.js 14 App Router, React Components, Tailwind CSS
+            |
+            v
+[ 2. Application Layer ]  ---> Express Controllers, Zod Input Validators, Middleware Stack
+            |
+            v
+[ 3. Domain Layer ]       ---> Pure Business Logic (Cooldown Engine, ABO/Rh Compatibility)
+            |
+            v
+[ 4. Persistence Layer ]  ---> Prisma ORM, PostgreSQL 16 + PostGIS Spatial Queries
+            |
+            v
+[ 5. Integration Layer ]  ---> Twilio SMS API, SendGrid Email API, Google Distance API
+```
+
+---
+
+## 8. Directory & File Organization
 
 ```
 blood-donation-network/
@@ -165,16 +185,17 @@ blood-donation-network/
 │   └── prisma/
 │       ├── schema.prisma      # Prisma database schema definition
 │       └── seed.ts            # Seed script populating demo accounts
-└── frontend/
-    ├── src/
-    │   ├── app/               # Next.js App Router pages (landing, login, register, donor, hospital, admin)
-    │   ├── components/        # Navbar, MatchAlertCard, Button, Badge, Card primitives
-    │   └── lib/               # API fetch wrapper & auth store
+├── frontend/
+│   ├── src/
+│   │   ├── app/               # Next.js App Router pages (landing, login, register, donor, hospital, admin)
+│   │   ├── components/        # Navbar, MatchAlertCard, Button, Badge, Card primitives
+│   │   └── lib/               # API fetch wrapper & auth store
+└── docs/                      # Deep-dive engineering blueprints (System Design, Security, DB, DevOps)
 ```
 
 ---
 
-## 9. Installation & Local Setup Guide
+## 9. Installation & Local Development
 
 ### Prerequisites
 - Node.js >= 20.0.0
@@ -183,7 +204,7 @@ blood-donation-network/
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/raviranjansingh/blood-donation-network.git
+git clone https://github.com/Hellthefox808/Blood-Donation-Network.git
 cd blood-donation-network
 ```
 
@@ -201,7 +222,7 @@ cd ../frontend
 npm install
 ```
 
-### Step 4: Run Development Servers
+### Step 4: Start Development Servers
 ```bash
 # Terminal 1: Backend API (http://localhost:5000)
 cd backend
@@ -214,24 +235,28 @@ npm run dev
 
 ---
 
-## 10. Configuration & Environment Variables
+## 10. Environment Variables & Configuration
 
-Backend environment configuration in `backend/.env`:
+### Backend `.env` Specification (`backend/.env.example`)
 ```env
 PORT=5000
 NODE_ENV=development
 DATABASE_URL="file:./dev.db"
 JWT_SECRET="super-secret-bdn-jwt-key-change-in-prod"
+TWILIO_ACCOUNT_SID="your_twilio_sid"
+TWILIO_AUTH_TOKEN="your_twilio_token"
+TWILIO_PHONE_NUMBER="+18005550199"
+SENDGRID_API_KEY="your_sendgrid_key"
 ```
 
-Frontend environment configuration in `frontend/.env.local`:
+### Frontend `.env` Specification (`frontend/.env.example`)
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:5000/api/v1"
 ```
 
 ---
 
-## 11. Usage Guide & Sandbox Demo Accounts
+## 11. Usage Guide & Pre-Seeded Accounts
 
 Log in using any pre-seeded sandbox credential:
 
@@ -243,78 +268,86 @@ Log in using any pre-seeded sandbox credential:
 
 ---
 
-## 12. API Overview
+## 12. REST API Endpoint Reference
 
-All API endpoints follow RESTful standards and return standard RFC 7807 JSON error responses on failure.
+All endpoints return RFC 7807 problem details JSON envelopes on failure:
 
-| Method | Endpoint Path | Role Allowed | Description |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/v1/auth/login` | Public | Authenticate user & receive Bearer JWT. |
-| `POST` | `/api/v1/auth/register/donor` | Public | Register new voluntary donor account. |
-| `GET` | `/api/v1/donors/me` | `DONOR` | Fetch active donor profile & cooldown. |
-| `POST` | `/api/v1/hospitals/requests` | `HOSPITAL_ADMIN` | Broadcast emergency blood request. |
-| `POST` | `/api/v1/matches/:id/accept` | `DONOR` | Accept emergency donation match. |
-| `GET` | `/api/v1/admin/audit-logs` | `SYSTEM_ADMIN` | Query security audit log entries. |
-
----
-
-## 13. Security & Access Control
-
-- **Authentication:** Dual-token JWT (RS256 signed) + HttpOnly refresh cookies.
-- **Authorization:** Strict RBAC middleware checking signed JWT role claims on every route.
-- **Input Validation:** Zod schemas validate and sanitize all HTTP body, query, and path inputs.
-- **Data Encryption & Privacy:** PII encrypted at rest using AES-256-GCM. Donor identities remain obfuscated from hospital view until explicit match acceptance.
-- **Audit Logging:** Immutable records written to `audit_logs` for all high-privilege operations.
+```
+POST   /api/v1/auth/login                  -> Authenticate & receive Bearer JWT
+POST   /api/v1/auth/register/donor         -> Register voluntary donor profile
+POST   /api/v1/auth/register/hospital      -> Register medical facility profile
+GET    /api/v1/donors/me                   -> Fetch active donor profile & cooldown
+PUT    /api/v1/donors/availability          -> Toggle donor availability switch
+POST   /api/v1/hospitals/requests          -> Create emergency blood request (Role: HOSPITAL_ADMIN)
+GET    /api/v1/hospitals/requests          -> List active hospital requests & donor ETAs
+POST   /api/v1/hospitals/donations/confirm -> Confirm unit receipt & trigger 56-day cooldown
+POST   /api/v1/matches/:id/accept          -> Accept emergency match (Role: DONOR)
+GET    /api/v1/admin/hospitals/pending    -> List unverified hospital applications (Role: SYSTEM_ADMIN)
+POST   /api/v1/admin/hospitals/:id/verify -> Approve/Reject hospital accreditation
+GET    /api/v1/admin/audit-logs            -> Query paginated security audit log trail
+```
 
 ---
 
-## 14. Performance Strategy
+## 13. Security Architecture & Controls
 
-- **Spatial Indexing:** GIST indexes on PostGIS geometry columns deliver sub-second proximity query execution across 100,000+ records.
-- **Redis Caching:** Sub-millisecond session checking and rate-limiting token buckets.
-- **Next.js Route Splitting:** Automatic code splitting and optimized First Load JS bundles (< 95 kB).
+- **OWASP ASVS v4.0 Level 2 Baseline:**
+  - Password Hashing: Argon2id / bcryptjs with 10 salt rounds.
+  - Token Management: Short-lived (15 min) RS256 signed JWTs + HttpOnly cookies + Redis token revocation blacklist.
+  - Data Protection: Field-level AES-256-GCM encryption for PII; donor identity obfuscation prior to match acceptance.
+  - Audit Trail: Immutable records written to `audit_logs` for all sensitive actions.
 
 ---
 
-## 15. Accessibility (WCAG 2.2 AA)
+## 14. Performance Optimization
 
-- **Keyboard Focus:** Visible focus rings (`focus:ring-2 focus:ring-crimson-500`) on all interactive controls.
+- **PostGIS Spatial Indexing:** GIST spatial indexes on `donor_profiles.location` deliver sub-second proximity query execution across 100,000+ records.
+- **Redis Session Storage:** Sub-millisecond session checking and rate-limiting token buckets.
+- **Next.js Bundle Optimization:** Static route prerendering with minimal First Load JS (< 95 kB).
+
+---
+
+## 15. Accessibility (WCAG 2.2 Level AA)
+
+- **Keyboard Navigation:** Visible focus rings (`focus:ring-2 focus:ring-crimson-500`) on all interactive controls.
 - **Contrast Ratios:** High-contrast color tokens exceeding 4.5:1 for UI components and 15:1 for body text.
 - **Screen Readers:** ARIA live regions (`aria-live="polite"`) for dynamic emergency match updates.
 
 ---
 
-## 16. Testing Strategy
+## 16. Testing & Quality Assurance
 
-- **Unit Tests:** Jest testing domain logic, eligibility calculators, and blood compatibility matrices.
-- **Integration Tests:** Supertest suite executing against Dockerized test database containers.
-- **E2E Browser Tests:** Playwright browser automation verifying full multi-user hospital/donor flows.
+- **Unit Tests:** Jest tests for blood compatibility matrix and donor cooldown math.
+- **Integration Tests:** Supertest suite executing HTTP API queries against test database.
+- **E2E Browser Tests:** Playwright automation testing full multi-user hospital/donor flows.
 - **Accessibility Scans:** Automated `@axe-core/playwright` WCAG 2.2 AA accessibility audits.
 
 ---
 
-## 17. Deployment & CI/CD
+## 17. Deployment & CI/CD Infrastructure
 
-- **Containerization:** Production multi-stage `Dockerfile` and `docker-compose.yml` included.
-- **CI/CD Pipeline:** GitHub Actions automates linting, typechecking, Prisma status checks, unit tests, and Docker Hub image pushes.
+- **Docker Setup:** Production multi-stage `Dockerfile` and `docker-compose.yml` included.
+- **CI/CD Pipeline:** GitHub Actions automates linting, typechecking, Prisma migration checks, unit tests, and Docker Hub image pushes.
 - **Rolling Rollbacks:** Kubernetes Helm charts configured for zero-downtime rolling updates and instant automated rollbacks upon smoke test failure.
 
 ---
 
-## 18. Documentation Index
+## 18. Complete Documentation Index
 
 For detailed technical specifications, refer to the dedicated documents:
-- [PROJECT_OVERVIEW.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/PROJECT_OVERVIEW.md) — Vision, Business Problem, Solution & Scalability Goals.
-- [ARCHITECTURE.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/ARCHITECTURE.md) — 4-Layer System Architecture & Lifecycles.
-- [DATABASE.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/DATABASE.md) — Prisma Schema, PostGIS Queries, ERD & Seed Data.
-- [API_SPEC.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/API_SPEC.md) — REST Endpoint Specification & RFC 7807 Errors.
-- [SECURITY.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/SECURITY.md) — Security Architecture & RBAC Control Matrix.
-- [DEPLOYMENT.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/DEPLOYMENT.md) — Environment Config, Docker & CI/CD Pipeline.
-- [TEST_PLAN.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/TEST_PLAN.md) — QA Testing Pyramid & E2E Test Suite.
+- [PROJECT_OVERVIEW.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/PROJECT_OVERVIEW.md) — Executive Project Brief & Scalability Goals.
+- [docs/system-design.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/docs/system-design.md) — C4 Architecture Diagrams & Workflows.
+- [docs/frontend-architecture.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/docs/frontend-architecture.md) — Next.js 14 App Router UI & WCAG 2.2 AA Specs.
+- [docs/backend-architecture.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/docs/backend-architecture.md) — Express Layer Separation & RFC 7807 Error Specs.
+- [docs/database-design.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/docs/database-design.md) — PostgreSQL 16 Schema, PostGIS GIST Indexes & Audit Logs.
+- [docs/security-blueprint.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/docs/security-blueprint.md) — OWASP ASVS v4.0 Level 2 Baseline & PII Encryption.
+- [docs/devops-blueprint.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/docs/devops-blueprint.md) — Docker Compose, GitHub Actions CI/CD & Helm Rollbacks.
+- [docs/testing-strategy.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/docs/testing-strategy.md) — Testing Pyramid, Playwright E2E & Axe-Core Scans.
+- [docs/per-file-documentation.md](file:///c:/Users/ravir/Desktop/PROJECT/Project/p2/01-Full-Stack-Web/blood-donation-network/docs/per-file-documentation.md) — Per-File Technical Engineering Briefs.
 
 ---
 
-## 19. Strategic Roadmap
+## 19. Strategic Product Roadmap
 
 - **Phase 1 (MVP - Current):** Core Auth, RBAC, PostGIS spatial matching, 56-day cooldown engine, WebSockets/SMS alerts, Hospital & Admin dashboards.
 - **Phase 2 (Q4 2026):** Blood Bank inventory management module, Google Maps Distance Matrix driving ETAs, multi-language localization.
