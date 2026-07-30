@@ -1,0 +1,15 @@
+# Windsurf IDE Project Rules: Blood Donation Network (BDN)
+
+# Code Quality & Standards
+- Enforce strict TypeScript typing across frontend and backend codebases.
+- Frontend components must follow React 18 / Next.js 14 App Router standards.
+- Backend services must adhere to the 4-layer architecture defined in ARCHITECTURE.md.
+
+# Domain Principles
+- Emergency blood request matching MUST use PostGIS spatial distance queries (`ST_DWithin`).
+- Enforce clinical blood compatibility rules (ABO/Rh matrix) and 56-day whole blood donor cooldowns.
+- Maintain PII confidentiality; obfuscate donor identity until explicit match acceptance.
+
+# Documentation Compliance
+- Always verify changes against AGENTS.md, ARCHITECTURE.md, and API_SPEC.md.
+- Keep DATABASE.md in sync with any schema migrations.

@@ -1,0 +1,164 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         String   @default("DONOR") // DONOR, HOSPITAL_ADMIN, BLOOD_BANK_MANAGER, SYSTEM_ADMIN
+  isVerified   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  donorProfile DonorProfile?
+  hospital     Hospital?
+  bloodBank    BloodBank?
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model DonorProfile {
+  id               String    @id @default(uuid())
+  userId           String    @unique
+  fullName         String
+  phone            String    @unique
+  bloodGroup       String    // A_POSITIVE, A_NEGATIVE, B_POSITIVE, B_NEGATIVE, AB_POSITIVE, AB_NEGATIVE, O_POSITIVE, O_NEGATIVE
+  dateOfBirth      DateTime
+  weightKg         Float
+  isAvailable      Boolean   @default(true)
+  lastDonationDate DateTime?
+  nextEligibleDate DateTime
+  latitude         Float
+  longitude        Float
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matches   Match[]
+  donations Donation[]
+
+  @@map("donor_profiles")
+}
+
+model Hospital {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  name          String
+  licenseNumber String   @unique
+  phone         String
+  address       String
+  latitude      Float
+  longitude     Float
+  isApproved    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requests  BloodRequest[]
+  donations Donation[]
+
+  @@map("hospitals")
+}
+
+model BloodBank {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  name          String
+  licenseNumber String   @unique
+  phone         String
+  address       String
+  latitude      Float
+  longitude     Float
+  createdAt     DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inventories Inventory[]
+
+  @@map("blood_banks")
+}
+
+model BloodRequest {
+  id             String   @id @default(uuid())
+  hospitalId     String
+  bloodGroup     String   // O_NEGATIVE, O_POSITIVE, etc.
+  componentType  String   @default("WHOLE_BLOOD") // WHOLE_BLOOD, PACKED_RED_BLOOD_CELLS, PLATELETS, FRESH_FROZEN_PLASMA
+  unitsRequested Int
+  unitsFulfilled Int      @default(0)
+  urgency        String   @default("ROUTINE") // ROUTINE, URGENT, CRITICAL
+  status         String   @default("SEARCHING") // SEARCHING, PARTIALLY_MATCHED, FULFILLED, CANCELLED, EXPIRED
+  requiredBy     DateTime
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  hospital Hospital @relation(fields: [hospitalId], references: [id])
+  matches  Match[]
+
+  @@map("blood_requests")
+}
+
+model Match {
+  id             String    @id @default(uuid())
+  requestId      String
+  donorId        String
+  status         String    @default("NOTIFIED") // NOTIFIED, ACCEPTED, DECLINED, EXPIRED, COMPLETED
+  distanceMeters Float
+  notifiedAt     DateTime  @default(now())
+  respondedAt    DateTime?
+
+  request  BloodRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  donor    DonorProfile @relation(fields: [donorId], references: [id])
+  donation Donation?
+
+  @@unique([requestId, donorId])
+  @@map("matches")
+}
+
+model Donation {
+  id           String   @id @default(uuid())
+  matchId      String   @unique
+  donorId      String
+  hospitalId   String
+  unitsDonated Int      @default(1)
+  completedAt  DateTime @default(now())
+  remarks      String?
+
+  match    Match        @relation(fields: [matchId], references: [id])
+  donor    DonorProfile @relation(fields: [donorId], references: [id])
+  hospital Hospital     @relation(fields: [hospitalId], references: [id])
+
+  @@map("donations")
+}
+
+model Inventory {
+  id             String   @id @default(uuid())
+  bloodBankId    String
+  bloodGroup     String
+  componentType  String
+  unitsAvailable Int      @default(0)
+  expiryDate     DateTime
+  updatedAt      DateTime @updatedAt
+
+  bloodBank BloodBank @relation(fields: [bloodBankId], references: [id])
+
+  @@map("inventories")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String
+  details   String   // JSON string
+  ipAddress String
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}

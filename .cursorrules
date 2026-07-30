@@ -1,0 +1,23 @@
+# Cursor IDE Project Rules: Blood Donation Network (BDN)
+
+# Tech Stack & Language Guidelines
+- Always use TypeScript with strict mode enabled. Never introduce `any` types.
+- Backend: Node.js 20 LTS, Express.js, Prisma ORM, Zod, PostgreSQL 16 with PostGIS.
+- Frontend: Next.js 14+ (App Router), React 18, Tailwind CSS, TanStack Query.
+
+# Architecture & Layer Boundaries
+- Enforce strict 4-layer separation: Presentation -> Service -> Data -> Integration.
+- Controllers parse HTTP inputs, validate via Zod, and delegate to Domain Services.
+- Database access must occur through Prisma ORM or PostGIS `$queryRaw`.
+- Domain logic (cooldown calculators, blood compatibility matrix) must be pure TypeScript.
+
+# Security Guardrails
+- Validate all API inputs using Zod.
+- Hash passwords using Argon2id.
+- Obfuscate donor identity (name/phone) from hospital view until match acceptance.
+- Include audit log trigger (`AuditService.log()`) on all high-privilege operations.
+
+# Documentation Synchronization
+- If you add or modify a Prisma model, update `DATABASE.md`.
+- If you add or modify a REST endpoint, update `API_SPEC.md`.
+- If you alter RBAC roles or security middleware, update `SECURITY.md`.
