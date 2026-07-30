@@ -359,14 +359,3 @@ For detailed technical specifications, refer to the dedicated documents:
 
 Distributed under the MIT License. See `LICENSE` for details.
 
----
-
-## 21. Author & Maintainer Profile
-
-**Ravi Ranjan Singh**  
-- **Role:** Software Engineer | Software Architect | Full Stack Developer | AI SaaS Developer | Repository Owner & Principal Maintainer  
-- **GitHub:** [github.com/raviranjansingh](https://github.com/raviranjansingh)  
-- **Portfolio:** [raviranjansingh.dev](https://raviranjansingh.dev)  
-- **LinkedIn:** [linkedin.com/in/raviranjansingh](https://linkedin.com/in/raviranjansingh)  
-
-*Note: All project architecture, design specifications, database schemas, and codebase implementations are authored and maintained by Ravi Ranjan Singh.*
