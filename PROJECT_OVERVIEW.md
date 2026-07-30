@@ -80,6 +80,6 @@ This repository and its underlying architecture, database design, API specificat
 
 **Ravi Ranjan Singh**  
 - **Role:** Software Engineer | Software Architect | Full Stack Developer | AI SaaS Developer | Repository Owner & Principal Maintainer  
-- **GitHub:** [github.com/raviranjansingh](https://github.com/raviranjansingh)  
-- **Portfolio:** [raviranjansingh.dev](https://raviranjansingh.dev)  
-- **LinkedIn:** [linkedin.com/in/raviranjansingh](https://linkedin.com/in/raviranjansingh)  
+- **GitHub Profile:** [github.com/Hellthefox808](https://github.com/Hellthefox808)  
+- **Repository:** [github.com/Hellthefox808/Blood-Donation-Network](https://github.com/Hellthefox808/Blood-Donation-Network)  
+

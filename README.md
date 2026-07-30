@@ -359,3 +359,15 @@ For detailed technical specifications, refer to the dedicated documents:
 
 Distributed under the MIT License. See `LICENSE` for details.
 
+---
+
+## 21. Author
+
+**Ravi Ranjan Singh**  
+*Software Engineer | Software Architect | Full Stack Developer | AI SaaS Developer | Repository Owner*
+
+- **GitHub Profile:** [github.com/Hellthefox808](https://github.com/Hellthefox808)
+- **Repository:** [github.com/Hellthefox808/Blood-Donation-Network](https://github.com/Hellthefox808/Blood-Donation-Network)
+
+
+
